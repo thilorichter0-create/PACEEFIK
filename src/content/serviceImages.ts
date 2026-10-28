@@ -8,6 +8,19 @@ const previewImages: Record<string, number> = {
   "renovation": 55,
 };
 
-export function servicePreviewImage(slug: string) {
-  return `/images/paceefik/image${previewImages[slug] ?? 52}.webp`;
+export function getAssetUrl(path: string): string {
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+  const clean = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${clean}`;
+}
+
+export function paceefikImageUrl(imageNumber: number | string, thumbnail = false): string {
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+  const folder = thumbnail ? "/images/paceefik/thumb" : "/images/paceefik";
+  return `${base}${folder}/image${imageNumber}.webp`;
+}
+
+export function servicePreviewImage(slug: string, thumbnail = true): string {
+  const num = previewImages[slug] ?? 52;
+  return paceefikImageUrl(num, thumbnail);
 }

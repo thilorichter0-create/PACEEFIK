@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { services } from "@/content/services";
+import { paceefikImageUrl } from "@/content/serviceImages";
 
-type Photo = { src: string; alt: string; stage: "Construction" | "Completed" | "People & team" };
+type Photo = { src: string; thumb: string; alt: string; stage: "Construction" | "Completed" | "People & team" };
 const photo = (n: number, alt: string, stage: Photo["stage"] = "Construction"): Photo => ({
-  src: `/images/paceefik/image${n}.webp`, alt, stage,
+  src: paceefikImageUrl(n, false),
+  thumb: paceefikImageUrl(n, true),
+  alt,
+  stage,
 });
 
 const galleryByService: Record<string, Photo[]> = {
@@ -184,7 +188,7 @@ export function ProjectGallery({ initialService = "", showSelector = false }: { 
     </div>
     <div className="portfolio-photo-grid">
       {displayedPhotos.map((item, index) => <button type="button" className="portfolio-photo-card" key={`${item.src}-${index}`} onClick={() => setActiveIndex(index)} aria-label={`Open photo ${index + 1}: ${item.alt}`}>
-        <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
+        <img src={item.thumb} alt={item.alt} loading="lazy" decoding="async" />
         <span className="portfolio-photo-caption">{item.stage === "Completed" ? "Finished work" : item.stage === "People & team" ? "People & site work" : "Construction in progress"}</span>
       </button>)}
     </div>

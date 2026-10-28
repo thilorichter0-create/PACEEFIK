@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowRight, Check, Copy, Search } from "lucide-react";
 import { insightBySlug, insights, readMinutes, type InsightRecord } from "@/content/insights";
 import { services } from "@/content/services";
+import { paceefikImageUrl } from "@/content/serviceImages";
 
 type Props = { slug?: string };
 type Category = "All" | "Guides" | "Structural Basics" | "Project Notes" | "Company News";
@@ -63,7 +64,7 @@ function insightImage(serviceSlug: string) {
     "geotechnical-services": 18,
     "renovation": 55,
   };
-  return `/images/paceefik/image${imageByService[serviceSlug] ?? 52}.webp`;
+  return paceefikImageUrl(imageByService[serviceSlug] ?? 52, true);
 }
 
 function InsightCard({ article }: { article: InsightRecord }) {

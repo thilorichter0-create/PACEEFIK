@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/siteConfig";
 import { services } from "@/content/services";
 import { howWeWorkStages } from "@/content/howWeWork";
 import { insights, readMinutes } from "@/content/insights";
-import { servicePreviewImage } from "@/content/serviceImages";
+import { servicePreviewImage, paceefikImageUrl } from "@/content/serviceImages";
 
 const values = ["Trust", "Integrity", "Attention to detail", "Quality", "Practical engineering"];
 const promises = [
@@ -17,7 +17,7 @@ export default function HomePage() {
   return <>
     <section className="home-hero home-hero-reference">
       <div className="home-hero-media" aria-hidden="true">
-        <img className="home-hero-photo" src="/images/paceefik/image52.webp" alt="" fetchPriority="high" />
+        <img className="home-hero-photo" src={paceefikImageUrl(52)} alt="" fetchPriority="high" decoding="async" />
       </div>
       <div className="site-container home-hero-content">
         <p className="eyebrow">{siteConfig.baseLocation}</p>
@@ -77,7 +77,7 @@ export default function HomePage() {
     <section className="home-project-feature">
       <div className="site-container home-project-inner">
         <div className="home-project-art">
-          <img src="/images/paceefik/image62.webp" alt="Paceefik residential building project" loading="lazy" />
+          <img src={paceefikImageUrl(62, true)} alt="Paceefik residential building project" loading="lazy" decoding="async" />
           <span>Selected project work</span>
         </div>
         <div className="home-project-copy"><p className="eyebrow">Projects</p><h2>Our project portfolio</h2><p className="home-project-claim">100+ projects completed</p><p>Explore our projects and see the work as verified project details and approved photographs are added.</p><a className="button button-dark" href="/projects">View Our Projects <ArrowRight size={16} aria-hidden="true" /></a></div>
@@ -86,7 +86,7 @@ export default function HomePage() {
 
     <section className="home-founder-band content-section">
       <div className="site-container home-founder-inner">
-        <div className="home-founder-photo"><img src="/images/paceefik/image10.webp" alt={`Portrait of ${siteConfig.founderName}`} loading="lazy" /></div>
+        <div className="home-founder-photo"><img src={paceefikImageUrl(10, true)} alt={`Portrait of ${siteConfig.founderName}`} loading="lazy" decoding="async" /></div>
         <div className="home-founder-copy"><p className="eyebrow">Founder and lead</p><h2>{siteConfig.founderName}</h2><p>Project manager, builder, engineering educator, writer, speaker and volunteer. His own words: “I Build! I Train! I write! I Teach! I Speak! I Volunteer!”</p><a className="text-link" href="/about">Meet the founder <ArrowRight size={15} aria-hidden="true" /></a></div>
       </div>
     </section>
