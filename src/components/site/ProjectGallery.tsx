@@ -148,13 +148,19 @@ export function ProjectGallery({ initialService = "", showSelector = false }: { 
   const [selectedService, setSelectedService] = useState(initialService);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [stage, setStage] = useState<"All" | Photo["stage"]>("All");
+  const [visibleCount, setVisibleCount] = useState(18);
   const activeService = services.find((item) => item.slug === selectedService);
   const photos = useMemo(() => {
     const base = selectedService ? galleryByService[selectedService] ?? [] : Object.values(galleryByService).flat();
     const unique = base.filter((item, index) => base.findIndex((other) => other.src === item.src) === index);
     return stage === "All" ? unique : unique.filter((item) => item.stage === stage);
   }, [selectedService, stage]);
+  const displayedPhotos = useMemo(() => photos.slice(0, visibleCount), [photos, visibleCount]);
   const selectedPhoto = activeIndex === null ? null : photos[activeIndex];
+
+  useEffect(() => {
+    setVisibleCount(18);
+  }, [selectedService, stage]);
 
   useEffect(() => {
     if (activeIndex === null) return;
@@ -177,11 +183,22 @@ export function ProjectGallery({ initialService = "", showSelector = false }: { 
       {(["All", "Construction", "Completed", "People & team"] as const).map((item) => <button type="button" key={item} className={stage === item ? "is-active" : ""} aria-pressed={stage === item} onClick={() => setStage(item)}>{item === "All" ? "All photographs" : item}</button>)}
     </div>
     <div className="portfolio-photo-grid">
-      {photos.map((item, index) => <button type="button" className="portfolio-photo-card" key={`${item.src}-${index}`} onClick={() => setActiveIndex(index)} aria-label={`Open photo ${index + 1}: ${item.alt}`}>
+      {displayedPhotos.map((item, index) => <button type="button" className="portfolio-photo-card" key={`${item.src}-${index}`} onClick={() => setActiveIndex(index)} aria-label={`Open photo ${index + 1}: ${item.alt}`}>
         <img src={item.src} alt={item.alt} loading="lazy" decoding="async" />
         <span className="portfolio-photo-caption">{item.stage === "Completed" ? "Finished work" : item.stage === "People & team" ? "People & site work" : "Construction in progress"}</span>
       </button>)}
     </div>
+    {photos.length > visibleCount && (
+      <div style={{ textAlign: "center", marginTop: "32px" }}>
+        <button
+          type="button"
+          className="button button-outline"
+          onClick={() => setVisibleCount((prev) => Math.min(prev + 18, photos.length))}
+        >
+          Show More Photographs ({photos.length - visibleCount} remaining)
+        </button>
+      </div>
+    )}
     {!photos.length && <p className="empty-state">There are no photographs in this category.</p>}
     {selectedPhoto && <div className="portfolio-lightbox" role="dialog" aria-modal="true" aria-label="Project photograph viewer" onClick={() => setActiveIndex(null)}>
       <button type="button" className="portfolio-lightbox-close" onClick={() => setActiveIndex(null)} aria-label="Close image viewer"><X /></button>

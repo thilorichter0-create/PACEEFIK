@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import compression from "compression";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -8,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(compression());
 app.use(express.json({ limit: "25mb" }));
 
 // In-memory store for submitted quotes and contact messages
@@ -120,8 +122,17 @@ app.get("/api/health", (_req, res) => {
 async function startServer() {
   const isProd = process.env.NODE_ENV === "production";
 
-  // Serve static assets from public/
-  app.use(express.static(path.resolve(__dirname, "public")));
+  // Serve static assets from public/ with aggressive cache headers for images and fonts
+  app.use(
+    express.static(path.resolve(__dirname, "public"), {
+      maxAge: "7d",
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith(".woff2") || filePath.endsWith(".webp") || filePath.endsWith(".jpg") || filePath.endsWith(".png")) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        }
+      },
+    })
+  );
 
   if (!isProd) {
     const { createServer: createViteServer } = await import("vite");
@@ -132,7 +143,16 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.resolve(__dirname, "dist");
-    app.use(express.static(distPath));
+    app.use(
+      express.static(distPath, {
+        maxAge: "1d",
+        setHeaders: (res, filePath) => {
+          if (filePath.includes("/assets/")) {
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+          }
+        },
+      })
+    );
     app.get("*", (_req, res) => {
       res.sendFile(path.resolve(distPath, "index.html"));
     });

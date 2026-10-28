@@ -1,19 +1,29 @@
-import { Component, useEffect, useState, type ErrorInfo, type ReactNode } from "react";
+import { Component, useEffect, useState, lazy, Suspense, type ErrorInfo, type ReactNode } from "react";
 import { siteConfig, isFilled, whatsappHrefFor } from "@/config/siteConfig";
 import SiteLayout from "@/components/site/SiteLayout";
 import HomePage from "@/pages/Home";
-import { FounderPage } from "@/pages/company";
-import { ServiceDetailPage, ServicesHubPage } from "@/pages/services";
-import { findProjectSlug, ProjectDetailPage, ProjectsPage } from "@/pages/projects";
-import QuoteRequestPage from "@/pages/QuoteRequestPage";
-import ContactPage from "@/pages/ContactPage";
-import { InsightsPage, InsightArticlePage } from "@/pages/insights";
-import { AccessibilityStatementPage, LegalPolicyPage, NotFoundPage, SearchResultsPage, SitemapPage, ThankYouPage } from "@/pages/utility";
+import { findProjectSlug } from "@/pages/projects";
 import { serviceBySlug } from "@/content/services";
 import { projectBySlug } from "@/content/projects";
 import { insightBySlug } from "@/content/insights";
 import { getPageMeta } from "@/content/siteRoutes";
 import { structuredDataForPage } from "@/content/structuredData";
+
+const FounderPage = lazy(() => import("@/pages/company").then((m) => ({ default: m.FounderPage })));
+const ServicesHubPage = lazy(() => import("@/pages/services").then((m) => ({ default: m.ServicesHubPage })));
+const ServiceDetailPage = lazy(() => import("@/pages/services").then((m) => ({ default: m.ServiceDetailPage })));
+const ProjectsPage = lazy(() => import("@/pages/projects").then((m) => ({ default: m.ProjectsPage })));
+const ProjectDetailPage = lazy(() => import("@/pages/projects").then((m) => ({ default: m.ProjectDetailPage })));
+const QuoteRequestPage = lazy(() => import("@/pages/QuoteRequestPage"));
+const ContactPage = lazy(() => import("@/pages/ContactPage"));
+const InsightsPage = lazy(() => import("@/pages/insights").then((m) => ({ default: m.InsightsPage })));
+const InsightArticlePage = lazy(() => import("@/pages/insights").then((m) => ({ default: m.InsightArticlePage })));
+const LegalPolicyPage = lazy(() => import("@/pages/utility").then((m) => ({ default: m.LegalPolicyPage })));
+const AccessibilityStatementPage = lazy(() => import("@/pages/utility").then((m) => ({ default: m.AccessibilityStatementPage })));
+const SitemapPage = lazy(() => import("@/pages/utility").then((m) => ({ default: m.SitemapPage })));
+const SearchResultsPage = lazy(() => import("@/pages/utility").then((m) => ({ default: m.SearchResultsPage })));
+const ThankYouPage = lazy(() => import("@/pages/utility").then((m) => ({ default: m.ThankYouPage })));
+const NotFoundPage = lazy(() => import("@/pages/utility").then((m) => ({ default: m.NotFoundPage })));
 
 class SiteErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
@@ -159,5 +169,20 @@ export default function App({ path, includeSamples = false }: AppProps) {
   else if (pathname === "/certifications" && siteConfig.switches.SHOW_CERTIFICATIONS) { pageName = "Certifications"; page = <section className="site-container page-body"><h1>Certifications</h1><p>{"{{CERTIFICATION_DOCUMENTS}}"}</p></section>; }
   else { pageName = "Page not found"; page = <NotFoundPage />; }
 
-  return <SiteErrorBoundary><><PageHead path={pathname} includeSamples={includeSamples}/><SiteLayout pageName={pageName}>{page}</SiteLayout></></SiteErrorBoundary>;
+  return (
+    <SiteErrorBoundary>
+      <PageHead path={pathname} includeSamples={includeSamples} />
+      <SiteLayout pageName={pageName}>
+        <Suspense
+          fallback={
+            <div className="site-container page-body" style={{ minHeight: "45vh", display: "grid", placeItems: "center" }}>
+              <p className="eyebrow" style={{ opacity: 0.7 }}>Loading...</p>
+            </div>
+          }
+        >
+          {page}
+        </Suspense>
+      </SiteLayout>
+    </SiteErrorBoundary>
+  );
 }
