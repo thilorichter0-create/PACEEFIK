@@ -1,0 +1,1 @@
+var i={"building-construction":52,"structural-and-concrete-works":22,blockwork:57,"borehole-drilling":18,"project-supervision-and-consultancy":14,"geotechnical-services":17,renovation:55};function a(e,r=!1){return`${"/PACEEFIK/".replace(/\/$/,"")}${r?"/images/paceefik/thumb":"/images/paceefik"}/image${e}.webp`}function n(e,r=!0){return a(i[e]??52,r)}export{n,a as t};
